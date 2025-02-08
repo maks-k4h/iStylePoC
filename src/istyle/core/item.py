@@ -1,6 +1,7 @@
+from .categories.item_category import ItemCategory
 from .image.image import Image
-from categories.season import Season
-from categories.item_subcategory import ItemSubcategory
+from .categories.season import Season
+from .categories.item_subcategory import ItemSubcategory
 
 
 class WardrobeItem:
@@ -33,6 +34,10 @@ class WardrobeItem:
     @property
     def seasons(self) -> list[Season]:
         return self._seasons
+
+    @property
+    def category(self) -> ItemCategory:
+        return self._subcategory.category
 
     @property
     def subcategory(self) -> ItemSubcategory:
