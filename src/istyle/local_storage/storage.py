@@ -1,4 +1,5 @@
 import json
+import shutil
 from pathlib import Path
 
 from PIL import Image
@@ -75,7 +76,9 @@ class LocalWardrobeStorage:
         Export wardrobe's data to the filesystem.
         :return: None
         """
-        self._p.mkdir(exist_ok=True, parents=True)
+        if self._p.is_dir():
+            shutil.rmtree(self._p)
+        self._p.mkdir(parents=True)
         for i, item_obj in enumerate(self._w.items):
             item_identifier = (f'{item_obj.category.name}_{item_obj.subcategory.name}_{i}'
                                .replace(' ', '-').lower())

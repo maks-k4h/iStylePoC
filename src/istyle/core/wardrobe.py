@@ -16,6 +16,9 @@ class Wardrobe:
     def add_item(self, i: item.WardrobeItem) -> None:
         self._items.append(i)
 
+    def __delitem__(self, key) -> None:
+        del self._items[key]
+
     def items_by_category(self, category: item_category.ItemCategory) -> list[item.WardrobeItem]:
         return [i for i in self.items if i.subcategory.category.name == category.name]
 

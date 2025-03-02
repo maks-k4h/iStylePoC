@@ -22,11 +22,19 @@ class WardrobeItem:
 
     @property
     def name(self) -> str:
-        return self._subcategory.name
+        return self._name
+
+    @name.setter
+    def name(self, name: str) -> None:
+        self._name = name
 
     @property
     def description(self) -> str:
         return self._description
+
+    @description.setter
+    def description(self, description: str) -> None:
+        self._description = description
 
     @property
     def image(self) -> Image:
@@ -36,6 +44,10 @@ class WardrobeItem:
     def seasons(self) -> list[Season]:
         return self._seasons
 
+    @seasons.setter
+    def seasons(self, seasons: list[Season]) -> None:
+        self._seasons = seasons
+
     @property
     def category(self) -> ItemCategory:
         return self._subcategory.category
@@ -43,3 +55,7 @@ class WardrobeItem:
     @property
     def subcategory(self) -> ItemSubcategory:
         return self._subcategory
+
+    @subcategory.setter
+    def subcategory(self, subcategory: ItemSubcategory) -> None:
+        self._subcategory = subcategory
