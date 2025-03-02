@@ -1,10 +1,9 @@
 import json
 from pathlib import Path
 
-from tomlkit.items import Item
+from PIL import Image
 
 from core import wardrobe, item, categories
-from core.image.image import Image
 from core.wardrobe import Wardrobe
 
 
@@ -52,7 +51,7 @@ class LocalWardrobeStorage:
 
         for item_i in item_identifiers:
             p_image = self._p / (item_i + ".png")
-            image = Image.from_file(p_image)
+            image = Image.open(p_image)
 
             p_json = self._p / (item_i + ".json")
             meta = json.loads(p_json.read_text())
@@ -81,7 +80,7 @@ class LocalWardrobeStorage:
             item_identifier = (f'{item_obj.category.name}_{item_obj.subcategory.name}_{i}'
                                .replace(' ', '-').lower())
             p_image = self._p / (item_identifier + ".png")
-            item_obj.image.to_file(p_image)
+            item_obj.image.save(p_image)
 
             p_json = self._p / (item_identifier + ".json")
             meta = {

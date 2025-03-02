@@ -1,9 +1,10 @@
 from pathlib import Path
+from typing import Any
 
 import gradio as gr
+from PIL import Image
 
 from core import categories, wardrobe, item
-from core.image.image import Image
 from local_storage.storage import LocalWardrobeStorage
 
 wardrobe_storage = LocalWardrobeStorage(Path('/tmp/istyle/wardrobe'), wardrobe.Wardrobe())
@@ -12,20 +13,24 @@ if wardrobe_storage.path.exists():
 
 
 with gr.Blocks() as demo:
-    with gr.Tab('Wardrobe'):
+    with gr.Tab('Wardrobe') as tab:
         # Layout
+        
+
         items_gallery = gr.Gallery(
-            value=[i.image.to_numpy() for i in wardrobe_storage.wardrobe.items],
+            value=[i.image for i in wardrobe_storage.wardrobe.items],
             columns=5,
             height=500,
+            allow_preview=False,
         )
 
         # Functionality
+        items_gallery.select(lambda: print('Lol'))
 
     with gr.Tab('Add Item'):
         # Layout
         with gr.Row():
-            item_image = gr.Image(format='png', type='filepath', image_mode='RGBA')
+            item_image = gr.Image(format='png', type='pil', image_mode='RGBA')
             with gr.Column():
                 item_name = gr.Textbox(label='Item Name')
                 item_description = gr.TextArea(label='Description')
@@ -42,10 +47,10 @@ with gr.Blocks() as demo:
             if sc.category.name == cat_name
         ]), inputs=[category_selector], outputs=[subcategory_selector])
 
-        subcategory_selector.select(lambda _: print('Hello!'), inputs=[subcategory_selector])
+        # subcategory_selector.select(lambda _: print('Hello!'), inputs=[subcategory_selector])
 
-        def add_item(s_image_path, name, description, seasons, subcategory_name) -> None:
-            if not s_image_path:
+        def add_item(image, name, description, seasons, subcategory_name) -> Any:
+            if not image:
                 raise gr.Error('Provide item image!')
             if not name:
                 raise gr.Error('Provide item name!')
@@ -58,7 +63,7 @@ with gr.Blocks() as demo:
                 name=name,
                 description=description,
                 seasons=[categories.season.Season(s) for s in seasons],
-                image=Image.from_file(Path(s_image_path)),
+                image=image,
                 subcategory=[c for c in categories.item_subcategory.PredefinedItemSubcategories.list_subcategories()
                              if c.name == subcategory_name][0]
             )
@@ -66,7 +71,15 @@ with gr.Blocks() as demo:
             wardrobe_storage.store()
             gr.Success(f'Item {name} successfully added.')
 
+            return gr.Gallery(
+                value=[i.image for i in wardrobe_storage.wardrobe.items],
+                columns=5,
+                height=500,
+            )
+
         gr.Button('Add Item!').click(add_item, inputs=[
-            item_image, item_name, item_description, item_seasons, subcategory_selector])
+            item_image, item_name, item_description, item_seasons, subcategory_selector], outputs=[
+            items_gallery,
+        ])
 
 demo.launch()

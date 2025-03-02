@@ -1,5 +1,6 @@
+from PIL import Image
+
 from .categories.item_category import ItemCategory
-from .image.image import Image
 from .categories.season import Season
 from .categories.item_subcategory import ItemSubcategory
 
