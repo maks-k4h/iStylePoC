@@ -1,5 +1,5 @@
-from core import item
-from core import categories
+from core import item, categories
+from item_processing.description.qwen2_5_vl import Qwen25VLItemDescriptor
 from local_storage.storage import LocalWardrobeStorage
 
 import gradio as gr
@@ -9,6 +9,7 @@ class AddItemTab:
     def __init__(self, s: LocalWardrobeStorage) -> None:
         self._storage = s
         self._build()
+        self._item_descriptor = Qwen25VLItemDescriptor()
 
     def _build(self) -> None:
         self._define_layout()
@@ -32,29 +33,54 @@ class AddItemTab:
     def _get_item_image(self):
         return gr.Image(format='png', type='pil', image_mode='RGBA')
 
-    def _get_item_name_field(self):
-        return gr.Textbox(label='Item Name')
+    def _get_item_name_field(self, interactive=False, value=None):
+        return gr.Textbox(label='Item Name', interactive=interactive, value=value)
 
-    def _get_item_description_field(self):
-        return gr.TextArea(label='Description')
+    def _get_item_description_field(self, interactive=False, value=None):
+        return gr.TextArea(label='Description', interactive=interactive, value=value)
 
-    def _get_item_seasons_field(self):
-        return gr.Dropdown(label='Seasons', choices=[s.value for s in categories.season.Season], multiselect=True)
+    def _get_item_seasons_field(self, interactive=False, value=[]):
+        return gr.Dropdown(
+            label='Seasons', choices=[s.value for s in categories.season.Season],
+            multiselect=True, interactive=interactive, value=value
+        )
 
-    def _get_item_category_selector(self):
-        return  gr.Dropdown(label='Category', value=None, choices=[
+    def _get_item_category_selector(self, interactive=False, value=None):
+        choices = [
             c.name for c in categories.item_category.PredefinedItemCategories.list_categories()
-        ])
+        ]
+        return  gr.Dropdown(label='Category', choices=choices, interactive=interactive, value=value)
 
-    def _get_item_subcategory_selector(self):
-        return gr.Dropdown(label='Subcategory', choices=[])
+    def _get_item_subcategory_selector(self, interactive=False, choices=[], value=None):
+        return gr.Dropdown(label='Subcategory', choices=choices, interactive=interactive, value=value)
 
-    def _get_add_item_button(self):
-        return gr.Button('Add Item!')
+    def _get_add_item_button(self, value=None):
+        return gr.Button('Add Item!', value=value)
 
     def _define_functionality(self) -> None:
         # Functionality
-        self.item_category_selector.select(lambda cat_name: gr.Dropdown(choices=[
+        def on_image_uploaded(image):
+            gr.Info('Analyzing item...')
+            res = self._item_descriptor.describe_by_image(image)
+            gr.Success('Item analyzed!')
+            return [
+                self._get_item_name_field(True, res.name),
+                self._get_item_description_field(True, res.description),
+                self._get_item_seasons_field(True, [v.value for v in res.seasons]),
+                self._get_item_category_selector(True, res.category.name),
+                self._get_item_subcategory_selector(True, [
+                    sc.name for sc in categories.item_subcategory.PredefinedItemSubcategories.list_subcategories()
+                    if sc.category.name == res.category.name
+                ], res.subcategory.name),
+            ]
+
+        self.item_image.upload(on_image_uploaded, inputs=[self.item_image], outputs=[
+            self.item_name, self.item_description,
+            self.item_seasons, self.item_category_selector,
+            self.item_subcategory_selector
+        ])
+
+        self.item_category_selector.select(lambda cat_name: self._get_item_subcategory_selector(True, choices=[
             sc.name for sc in categories.item_subcategory.PredefinedItemSubcategories.list_subcategories()
             if sc.category.name == cat_name
         ]), inputs=[self.item_category_selector], outputs=[self.item_subcategory_selector])
