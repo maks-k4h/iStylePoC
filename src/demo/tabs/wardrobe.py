@@ -28,9 +28,9 @@ class WardrobeTab:
                     self.subcategory_selector = self._get_subcateogry_selector()
                     self.item_index = self._get_item_index()
 
-            with gr.Row():
-                self.save_button = gr.Button("Save Changes")
-                self.delete_button = gr.Button("Delete Item")
+            with gr.Column():
+                self.save_button = gr.Button("Save Changes", variant='secondary')
+                self.delete_button = gr.Button("Delete Item", variant='stop')
 
     def _get_items_gallery(self) -> gr.Gallery:
         return gr.Gallery(
@@ -64,7 +64,11 @@ class WardrobeTab:
 
     def _get_subcateogry_selector(self, i:item.WardrobeItem | None = None) -> gr.Component:
         return gr.Dropdown(label="Subcategory",
-                           choices=[sc.name for sc in categories.item_subcategory.PredefinedItemSubcategories.list_subcategories()],
+                           choices=[
+                               sc.name
+                               for sc in categories.item_subcategory.PredefinedItemSubcategories.list_subcategories()
+                               if sc.category.name == i.category.name
+                           ] if i is not None else None,
                            value=None if i is None else i.subcategory.name,
                            interactive=True)
 
@@ -97,7 +101,7 @@ class WardrobeTab:
             current_item.description = description
             current_item.seasons = [categories.season.Season(s) for s in seasons]
             current_item.subcategory = categories.item_subcategory.ItemSubcategory(categories.item_category.ItemCategory(item_category), item_subcategory)
-            gr.Info('Item Updated!')
+            gr.Success('Item Updated!')
 
         self.save_button.click(save_changes,
                                inputs=[self.item_index, self.item_name, self.item_description, self.item_seasons, self.category_selector, self.subcategory_selector], outputs=[])
