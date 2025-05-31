@@ -36,7 +36,7 @@ class WardrobeTab:
         return gr.Gallery(
             [(v.image, str(i)) for i, v in enumerate(self._storage.wardrobe.items)],
             columns=5,
-            height=500,
+            # height=500,
             allow_preview=False,
             interactive=False,
         )

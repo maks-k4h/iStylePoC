@@ -1,5 +1,5 @@
 from core import item, categories
-from item_processing.description.qwen2_5_vl import Qwen25VLItemDescriptor
+from item_processing.description.ollama import OllamaItemDescriptor
 from local_storage.storage import LocalWardrobeStorage
 
 import gradio as gr
@@ -9,7 +9,7 @@ class AddItemTab:
     def __init__(self, s: LocalWardrobeStorage) -> None:
         self._storage = s
         self._build()
-        self._item_descriptor = Qwen25VLItemDescriptor()
+        self._item_descriptor = OllamaItemDescriptor()
 
     def _build(self) -> None:
         self._define_layout()

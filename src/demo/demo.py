@@ -14,6 +14,7 @@ if wardrobe_storage.path.exists():
 with gr.Blocks() as demo:
     welcome_tab = tabs.WelcomeTab()
     wardrobe_tab = tabs.WardrobeTab(wardrobe_storage)
+    recommendation_tab = tabs.RecommendationsTab(wardrobe_storage)
     add_item_tab = tabs.AddItemTab(wardrobe_storage)
 
 demo.launch()
