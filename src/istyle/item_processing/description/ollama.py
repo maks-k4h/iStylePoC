@@ -12,16 +12,16 @@ from . import abstract
 
 PROMPT_A = '''
 You are given a photo of an outfit item. Analyze the image and provide a structured JSON response with the following properties:
- - description: A detailed yet concise description of the item, highlighting key features such as material, color, patterns, or other characteristics that can help match it with outfits.
- - name: A concise and accurate name of the item (for example, "Blue denim jacket", "Black wool sweater", "White cargo pants", etc.).
+ - description: A short but informative description of the item, highlighting key features such as material, color, patterns, or other characteristics that can help match it with outfits.
  - seasons: An array indicating the suitable seasons for wearing this item. The seasons must be from {seasons}.
+ - name: A concise and accurate name of the item (for example, "Blue denim jacket", "Black wool sweater", "White cargo pants", etc.).
 
 Output Format:
 Your response must strictly adhere to the following JSON format without deviation:
 
 {{
+  "description": "Concise item description, 20-50 words",
   "name": "name of the item here",
-  "description": "detailed description here. Must be 100-150 words",
   "seasons": ["Season A", "Season B"]
 }}
 

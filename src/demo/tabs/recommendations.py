@@ -23,7 +23,6 @@ class RecommendationsTab:
         with gr.Tab('Recommendations') as tab:
             with gr.Row():
                 with gr.Column():
-                    self._gender_input = self._get_gender_input()
                     self._temperature_input = self._get_temperature_input()
                     self._weather_input = self._get_weather_input()
                     self._user_comment_input = self._get_user_comment_input()
@@ -31,9 +30,6 @@ class RecommendationsTab:
 
                 with gr.Column():
                     self._outfit_gallery = self._get_outfit_gallery()
-
-    def _get_gender_input(self):
-        return gr.Dropdown(choices=[g.value for g in recommender.v0.requirements.Genders], value=None)
 
     def _get_temperature_input(self):
         return gr.Slider(minimum=-20, maximum=40, step=1, value=15)
@@ -55,9 +51,8 @@ class RecommendationsTab:
         )
 
     def _define_functionality(self) -> None:
-        def on_recommend(gender, temperature, weather, user_comment):
+        def on_recommend(temperature, weather, user_comment):
             requirements = recommender.v0.requirements.OutfitRequirementsV0(
-                gender=recommender.v0.requirements.Genders(gender) if gender else None,
                 temperature_celsius=temperature,
                 weather_description=weather,
                 user_comment=user_comment,
@@ -65,6 +60,6 @@ class RecommendationsTab:
             outfit = self._recommender.recommend(requirements)[0]
             return self._get_outfit_gallery(outfit)
         self._recommend_button.click(on_recommend, inputs=[
-            self._gender_input, self._temperature_input,
+            self._temperature_input,
             self._weather_input, self._user_comment_input
         ], outputs=[self._outfit_gallery])
