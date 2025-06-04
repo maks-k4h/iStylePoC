@@ -101,6 +101,7 @@ class WardrobeTab:
             current_item.description = description
             current_item.seasons = [categories.season.Season(s) for s in seasons]
             current_item.subcategory = categories.item_subcategory.ItemSubcategory(categories.item_category.ItemCategory(item_category), item_subcategory)
+            self._storage.store()
             gr.Success('Item Updated!')
 
         self.save_button.click(save_changes,
@@ -122,4 +123,17 @@ class WardrobeTab:
 
         self.delete_button.click(delete_item, inputs=[self.item_index],
                                  outputs=[self.items_gallery, self.item_image, self.item_name, self.item_description, self.item_seasons, self.category_selector, self.subcategory_selector])
+
+        def set_subcategories(category):
+            return gr.Dropdown(label="Subcategory",
+                               choices=[
+                                   sc.name
+                                   for sc in categories.item_subcategory.PredefinedItemSubcategories.list_subcategories()
+                                   if sc.category.name == category
+                               ] if category is not None else None,
+                               value=None,
+                               interactive=True)
+
+
+        self.category_selector.select(set_subcategories, inputs=[self.category_selector], outputs=[self.subcategory_selector])
 

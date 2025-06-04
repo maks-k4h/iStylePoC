@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 from PIL import Image
 
-sys.path.insert(0, str(Path(__file__).parent.parent / 'istyle'))
+sys.path.insert(0, str(Path(__file__).parent.parent / 'src' / 'istyle'))
 
 from core.wardrobe import Wardrobe
 from local_storage.storage import LocalWardrobeStorage
@@ -15,6 +15,7 @@ def main(
         p_images: Path,
         p_wardrobe: Path,
 ) -> None:
+    p_wardrobe.mkdir(exist_ok=True, parents=True)
     descriptor = OllamaItemDescriptor()
     wardrobe = LocalWardrobeStorage(p_wardrobe, Wardrobe())
     wardrobe.load()

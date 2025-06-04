@@ -11,7 +11,7 @@ class ItemCategory:
 class PredefinedItemCategories:
     TOPS = ItemCategory('Tops')
     BOTTOMS = ItemCategory('Bottoms')
-    ONE_PIECE = ItemCategory('One-Piece')
+    # ONE_PIECE = ItemCategory('One-Piece')
     OUTERWEAR = ItemCategory('Outerwear')
     FOOTWEAR = ItemCategory('Footwear')
     ACCESSORIES = ItemCategory('Accessories')
